@@ -1,0 +1,152 @@
+fileFormatVersion: 2
+guid: 565996e96bd26cb46b4c320a8c0bf353
+timeCreated: 1469037634
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: highscores_0
+    21300002: highscores_4
+    21300004: highscores_5
+    21300006: highscores_6
+    21300008: highscores_7
+    21300010: highscores_8
+    21300012: highscores_9
+    21300014: highscores_10
+    21300016: highscores_11
+    21300018: highscores_12
+    21300020: highscores_13
+    21300022: highscores_14
+    21300024: highscores_15
+    21300026: highscores_16
+    21300028: highscores_17
+    21300030: highscores_18
+    21300032: highscores_19
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 7
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -1
+  maxTextureSize: 2048
+  textureSettings:
+    filterMode: -1
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  allowsAlphaSplitting: 0
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    sprites:
+    - name: highscores_0
+      rect:
+        serializedVersion: 2
+        x: 3
+        y: 4
+        width: 383
+        height: 53
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -130.5, y: -19.5}
+        - {x: -125.5, y: -26.5}
+        - {x: -56.5, y: -26.5}
+        - {x: -56.5, y: 26.5}
+        - {x: -95.5, y: 26.5}
+        - {x: -95.5, y: -0.5}
+        - {x: -110.5, y: 1.5}
+        - {x: -97.5, y: 15.5}
+        - {x: -97.5, y: 26.5}
+        - {x: -191.5, y: 26.5}
+        - {x: -191.5, y: -26.5}
+        - {x: -130.5, y: -26.5}
+      - - {x: -23.5, y: 26.5}
+        - {x: -30.5, y: 10.5}
+        - {x: -30.5, y: 6.5}
+        - {x: -25.5, y: -0.5}
+        - {x: -21.5, y: -5.5}
+        - {x: -30.5, y: -10.5}
+        - {x: -30.5, y: -17.5}
+        - {x: -27.5, y: -26.5}
+        - {x: 122.5, y: -26.5}
+        - {x: 122.5, y: 15.5}
+        - {x: 117.5, y: 26.5}
+      - - {x: 122.5, y: 26.5}
+        - {x: 122.5, y: -26.5}
+        - {x: 188.5, y: -26.5}
+        - {x: 191.5, y: -22.5}
+        - {x: 191.5, y: 26.5}
+    - name: highscores_10
+      rect:
+        serializedVersion: 2
+        x: 415
+        y: 4
+        width: 384
+        height: 53
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -131, y: -19.5}
+        - {x: -126, y: -26.5}
+        - {x: -57, y: -26.5}
+        - {x: -57, y: 26.5}
+        - {x: -96, y: 26.5}
+        - {x: -96, y: -0.5}
+        - {x: -111, y: 1.5}
+        - {x: -98, y: 15.5}
+        - {x: -98, y: 26.5}
+        - {x: -192, y: 26.5}
+        - {x: -192, y: -26.5}
+        - {x: -131, y: -26.5}
+      - - {x: -24, y: 26.5}
+        - {x: -31, y: 10.5}
+        - {x: -31, y: 6.5}
+        - {x: -26, y: -0.5}
+        - {x: -22, y: -5.5}
+        - {x: -31, y: -10.5}
+        - {x: -31, y: -17.5}
+        - {x: -28, y: -26.5}
+        - {x: 122, y: -26.5}
+        - {x: 122, y: 15.5}
+        - {x: 117, y: 26.5}
+      - - {x: 122, y: 26.5}
+        - {x: 122, y: -26.5}
+        - {x: 190, y: -26.5}
+        - {x: 192, y: -19.5}
+        - {x: 192, y: 26.5}
+    outline: []
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
