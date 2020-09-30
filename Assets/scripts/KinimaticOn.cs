@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Qubz.Core;
 
 public class KinimaticOn : MonoBehaviour {
 

@@ -1,366 +1,327 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
+using System.Linq;
+using Qubz.Core;
+using Qubz.Gui;
+using Qubz.Enums;
+using Qubz.Control;
 
-public class Placement : MonoBehaviour {
+namespace Qubz.Control{
+	public class Placement : MonoBehaviour {
+		public Material normalPlacementMaterial;
+		public Material greenPlacementMaterial;
+		public Material greenIndicatorMaterial;
+		public Material redPlacementMaterial;
+		public Material redIndicatorMaterial;		
+		public float destructionSpeed;
+		public int greenDestroyRadius = 4;
+		public Vector3 redDestroySize = new Vector3 (1, 1, 50);
+		
+		private GameObject _redGameObject;
+		private GameObject _greenGameObject;
+		private Collider[] boxes;
+		private bool _isGreenActive;
+		private bool _isRedActive;
 
+		public void GreenSquareAction(GameObject floorTile) {
+			var floorProperties = floorTile.GetComponent<FloorProperties>();
 
-	private float moveFB;
-	private float moveLR;
-	private float verticalVelocity;
-
-	public float moveSpeed;
-	private Vector3 movement;
-
-	public Material normal;
-
-	private GameObject greenGO;
-	public Material green;
-	public Material greenIndicator;
-	public bool greenUp;
-	public Material red;
-	public Material redIndicator;
-	public bool redUp;
-	private GameObject redGO;
-
-	private float timer;
-
-	public Collider[] boxes;
-
-
-	private bool firstLoop;
-
-	public float destructionSpeed;
-
-	private List<GameObject> greenChain;
-
-	public Camera cam;
-	private Rect posTest;
-
-	// Use this for initialization
-	void Start () {
-		posTest = new Rect(10, 10, 500, 500);
-	}
-	
-	// Update is called once per frame
-	void Update () {
-
-
-	
-	}
-
-	public void APressed(GameObject floorTile) {
-		if (greenUp == false) {
-			if (floorTile.GetComponent<FloorProporites> ().color == "Red") {
-				greenUp = true;
-				floorTile.GetComponent<Renderer> ().material = green;
-				floorTile.GetComponent<FloorProporites> ().color = "Green";
-				greenGO = floorTile.gameObject;
-				greenGO.GetComponent<FloorProporites> ().indicator.GetComponent<MeshRenderer> ().enabled = true;
-				greenGO.GetComponent<FloorProporites> ().indicator.GetComponent<Renderer> ().material = greenIndicator;
-				redUp = false;
+			if (!_isGreenActive) {
+				SetSquare(floorProperties, ColorEnum.Green);
+				SetSquareIndicator(floorProperties.indicator, ColorEnum.Green);
 			} else {
-				greenUp = true;
-
-				floorTile.GetComponent<Renderer> ().material = green;
-				floorTile.GetComponent<FloorProporites> ().color = "Green";
-				greenGO = floorTile.gameObject;
-				greenGO.GetComponent<FloorProporites> ().indicator.GetComponent<MeshRenderer> ().enabled = true;
-				greenGO.GetComponent<FloorProporites> ().indicator.GetComponent<Renderer> ().material = greenIndicator;
-			} 
-
-
-
-		} else {
-			//if there IS NOT a block on the green selected tile
-			if (greenGO.GetComponent<FloorProporites> ().cube == null) {
-				ResetBlock (greenGO);
-				greenGO = null;
-				greenUp = false;
-			} else {
-				//if there IS a block on the green selected tile
-				if (greenGO.GetComponent<FloorProporites> ().cubeColor != null) {
-					DestroyBlocks (greenGO);
-					ResetBlock (greenGO);
-					greenGO = null;
-					greenUp = false;
-				}
-			}
-		}
-
-
-	}
-
-	public void BPressed(GameObject floorTile) {
-		if (redUp == false) {
-			if (floorTile.GetComponent<FloorProporites> ().color == "Green") {
-				redUp = true;
-				floorTile.GetComponent<Renderer> ().material = red;
-				floorTile.GetComponent<FloorProporites> ().color = "Red";
-				redGO = floorTile.gameObject;
-				redGO.GetComponent<FloorProporites> ().indicator.GetComponent<MeshRenderer> ().enabled = true;
-				redGO.GetComponent<FloorProporites> ().indicator.GetComponent<Renderer> ().material = redIndicator;
-				greenUp = false;
-			} else {
-				redUp = true;
-				floorTile.GetComponent<Renderer> ().material = red;
-				floorTile.GetComponent<FloorProporites> ().color = "Red";
-				redGO = floorTile.gameObject;
-				redGO.GetComponent<FloorProporites> ().indicator.GetComponent<MeshRenderer> ().enabled = true;
-				redGO.GetComponent<FloorProporites> ().indicator.GetComponent<Renderer> ().material = redIndicator;
-			}
-		} else {
-			if (redGO.GetComponent<FloorProporites> ().cube == null) {
-				ResetBlock (redGO);
-				redGO = null;
-				redUp = false;
-			} else {
-				//if there IS a block on the green selected tile
-				if (redGO.GetComponent<FloorProporites> ().cubeColor != null) {
-					DestroyBlocks (redGO);
-					ResetBlock (redGO);
-					redGO = null;
-					redUp = false;
-				}
-			}
-		}
-	}
-
-
-	void GreenOnGreen(Transform indicator) {
-		bool firstLoopDone = false;
-
-		greenChain = new List<GameObject>();
-
-		GameObject beginingBlock = indicator.gameObject;
-		//Vector3 test = new Vector3 (1, 1, 50);
-		boxes = Physics.OverlapSphere (indicator.position, 4);
-
-		//Destroy (beginingBlock);
-		//boxes = Physics.OverlapBox(indicator.position, test, Quaternion.identity);
-
-		//destroy the boxes
-		for (int b = 0; b < boxes.Length; b++) {
-			/*if (boxes [b].tag == "Normal Cube") {
-				Destroy (boxes [b].gameObject);
-				ScoreSystem.CalculateScore (1, 0, 0, 0, 0);
-			}*/
-			if (boxes [b].tag == "Green Cube") {
-				//add the green cube to the chain list
-				greenChain.Add(boxes[b].gameObject);
-			}
-			/*
-			if (boxes [b].tag == "Red Cube") {
-				//Destroy (boxes [b].gameObject);
-				ScoreSystem.CalculateScore (1, 0, 0, 0, 0);
-			}
-			*/
-
-			/*
-			if (b == boxes.Length - 1) {
-				for (int i = 0; i < boxes.Length; i++) {
-					if (boxes [i].tag == "Block") {
-						boxes [i].GetComponent<FloorProporites> ().color = null;
-						boxes [i].GetComponent<FloorProporites> ().cubeColor = null;
-						boxes [i].GetComponent<FloorProporites> ().cube = null;
+				//if there IS NOT a block on the green selected tile
+				if (_greenGameObject.GetComponent<FloorProperties> ().cube == null) {
+					ResetBlock (_greenGameObject, ColorEnum.Green);
+				} else {
+					//if there IS a block on the green selected tile
+					if (_greenGameObject.GetComponent<FloorProperties> ().cubeColor != ColorEnum.None) {
+						DestroyBlocks (_greenGameObject);
+						ResetBlock (_greenGameObject, ColorEnum.Green);
 					}
 				}
-
-
-			}
-			*/
-			if (b == boxes.Length - 1) {
-				firstLoopDone = true;
 			}
 		}
 
-		if (firstLoopDone == true) {
-			
-			StartCoroutine(DestroyChain ());
+		public void RedSquareAction(GameObject floorTile) {
+			var floorProperties = floorTile.GetComponent<FloorProperties>();
 
-
-
-			//Code to run for each green in the chain
-
-		}
-
-
-
-		greenGO.GetComponent<FloorProporites> ().color = null;
-		greenGO.GetComponent<FloorProporites> ().cubeColor = null;
-		greenGO.GetComponent<FloorProporites> ().cube = null;
-		greenGO.GetComponent<Renderer> ().material = normal;
-		greenGO.GetComponent<FloorProporites> ().indicator.GetComponent<MeshRenderer> ().enabled = false;
-		greenGO = null;
-		greenUp = false;
-		//boxes = new Collider[20];
-
-	}
-
-
-	IEnumerator DestroyChain(){
-
-		for (int c = 0; c < greenChain.Count; c++) {
-			CubeSpawn.turnPause = true;
-
-			Collider[] testBox;
-
-			testBox = Physics.OverlapSphere (greenChain[c].transform.position, 4);
-
-			Destroy (greenChain [c].gameObject);
-			ScoreSystem.greenNum += 1;
-			ScoreSystem.multiplier += 1;
-
-			for (int b = 0; b < testBox.Length; b++) {
-				if (testBox [b].tag == "Normal Cube") {
-					Destroy (testBox [b].gameObject);
-					ScoreSystem.grayNum += 1;
+			if (!_isRedActive) {
+				SetSquare(floorProperties, ColorEnum.Red);
+				SetSquareIndicator(floorProperties.indicator, ColorEnum.Red);
+			} else {
+				//if there IS NOT a block on the green selected tile
+				if (_redGameObject.GetComponent<FloorProperties> ().cube == null) {
+					ResetBlock (_redGameObject, ColorEnum.Red);
+				} else {
+					//if there IS a block on the green selected tile
+					if (_redGameObject.GetComponent<FloorProperties> ().cubeColor != ColorEnum.None) {
+						DestroyBlocks (_redGameObject);
+						ResetBlock (_redGameObject, ColorEnum.Red);
+					}
 				}
-				if (testBox [b].tag == "Green Cube") {
+			}
+		}
 
-					//If the green block is not currently in the list of green blocks to destroy, add it
-					bool noNewGreen = false;
+		private void SetSquare(FloorProperties tile, ColorEnum color){
+			switch(color){
+				case ColorEnum.Green:
+					tile.GetComponent<Renderer>().material = greenPlacementMaterial;
+					_greenGameObject = tile.gameObject;
+					_isGreenActive = true;
 
-					for (int ba = 0; ba < greenChain.Count; ba++) {
-						if (greenChain [ba].gameObject != null) {
-							if (testBox [b].transform.position == greenChain [ba].transform.position) {
-								noNewGreen = true;
+					if(tile.color == ColorEnum.Red) _isRedActive = false;
+					break;
+				case ColorEnum.Red:
+					tile.GetComponent<Renderer>().material = redPlacementMaterial;
+					_redGameObject = tile.gameObject;
+					_isRedActive = true;
+
+					if(tile.color == ColorEnum.Green) _isGreenActive = false;
+					break;
+			}
+
+			tile.color = color;
+		}
+
+		private void SetSquareIndicator(GameObject indicator, ColorEnum color){
+			switch(color){
+				case ColorEnum.Green:
+					indicator.GetComponent<Renderer>().material = greenIndicatorMaterial;
+					break;
+				case ColorEnum.Red:
+					indicator.GetComponent<Renderer>().material = redIndicatorMaterial;
+					break;
+			}
+
+			indicator.GetComponent<MeshRenderer>().enabled = true;
+		}
+
+		private Collider[] GetOverlapingCubes(Vector3 position){
+			return Physics.OverlapSphere (position, greenDestroyRadius);
+		}
+
+		void GreenOnGreen(Transform indicator) {
+			var greenChain = new List<GameObject>();
+
+			boxes = GetOverlapingCubes(indicator.position);
+
+			foreach(var cube in boxes){
+				var cubeController = cube.GetComponent<CubeController>();
+
+				if(cubeController == null) continue;
+
+				if(cubeController.cubeColor != ColorEnum.Green) continue;
+
+				greenChain.Add(cube.gameObject);
+			}
+
+			StartCoroutine(DestroyGreenChain(greenChain));
+
+			ResetFloorProperties(_greenGameObject, true);
+			_greenGameObject = null;
+			_isGreenActive = false;
+		}
+
+		IEnumerator DestroyGreenChain(List<GameObject> chainList){
+			for (int c = 0; c < chainList.Count; c++) {
+				CubeSpawn.turnPause = true;
+
+				var overlappingCubes = Physics.OverlapSphere (chainList[c].transform.position, 4);
+
+				Destroy (chainList[c].gameObject);
+				ScoreSystem.IncreaseBlockScore(ColorEnum.Green);
+				ScoreSystem.multiplier += 1;
+
+				for (int b = 0; b < overlappingCubes.Length; b++) {
+					if(overlappingCubes[b].tag.ToLower() == "block"){
+						ResetFloorProperties(overlappingCubes[b].gameObject, false);
+						continue;
+					}
+
+					var cubeController = overlappingCubes[b].GetComponent<CubeController>();
+					if(cubeController == null) continue;
+
+					if (cubeController.cubeColor == ColorEnum.Green) {
+
+						//If the green block is not currently in the list of green blocks to destroy, add it
+						bool greenCubeExists = false;
+
+						for (int ba = 0; ba < chainList.Count; ba++) {
+							if (chainList [ba].gameObject != null) {
+								if (overlappingCubes[b].transform.position == chainList[ba].transform.position) {
+									greenCubeExists = true;
+								}
 							}
 						}
-					}
 
-					if (noNewGreen == false) {
-						greenChain.Add (testBox [b].gameObject);
-					}
-				}
-				if (testBox [b].tag == "Red Cube") {
-					Destroy (testBox [b].gameObject);
-					ScoreSystem.grayNum += 1;
-				}
-				if (b == testBox.Length - 1) {
-					for (int i = 0; i < testBox.Length; i++) {
-						if (testBox [i].tag == "Block") {
-							testBox [i].GetComponent<FloorProporites> ().color = null;
-							testBox [i].GetComponent<FloorProporites> ().cubeColor = null;
-							testBox [i].GetComponent<FloorProporites> ().cube = null;
+						if (!greenCubeExists) {
+							chainList.Add(overlappingCubes [b].gameObject);
 						}
 					}
 
-
-				}
-			}
-			yield return new WaitForSeconds (destructionSpeed);
-
-			if (c == greenChain.Count - 1) {
-				CubeSpawn.turnPause = false;
-				greenChain.Clear ();
-				ScoreSystem.CalculateScore ();
-			}
-		}
-	}
-
-	void RedOnRed(Transform indicator) {
-		Vector3 test = new Vector3 (1, 1, 50);
-		//boxes = Physics.OverlapSphere (indicator.position, 4);
-		boxes = Physics.OverlapBox(indicator.position, test, Quaternion.identity);
-
-		ScoreSystem.multiplier += 1;
-
-		for (int b = 0; b < boxes.Length; b++) {
-			if (boxes [b].tag == "Normal Cube") {
-				Destroy (boxes [b].gameObject);
-				ScoreSystem.grayNum += 1;
-			}
-			if (boxes [b].tag == "Green Cube") {
-				Destroy (boxes [b].gameObject);
-				ScoreSystem.grayNum += 1;
-			}
-			if (boxes [b].tag == "Red Cube") {
-				Destroy (boxes [b].gameObject);
-				ScoreSystem.redNum += 1;
-			}
-			if (b == boxes.Length - 1) {
-				for (int i = 0; i < boxes.Length; i++) {
-					if (boxes [i].tag == "Block") {
-						boxes [i].GetComponent<FloorProporites> ().color = null;
-						boxes [i].GetComponent<FloorProporites> ().cubeColor = null;
-						boxes [i].GetComponent<FloorProporites> ().cube = null;
+					
+					if (cubeController.cubeColor == ColorEnum.Gray || cubeController.cubeColor == ColorEnum.Red) {
+						ScoreSystem.IncreaseBlockScore(cubeController.cubeColor);
+						Destroy(cubeController.gameObject);
 					}
 				}
+				yield return new WaitForSeconds (destructionSpeed);
 			}
-			if (b == boxes.Length - 1) {
-				ScoreSystem.CalculateScore ();
-			}
+
+			CubeSpawn.turnPause = false;
+			ScoreSystem.CalculateScore();
 		}
 
-		redGO.GetComponent<FloorProporites> ().color = null;
-		redGO.GetComponent<FloorProporites> ().cubeColor = null;
-		redGO.GetComponent<FloorProporites> ().cube = null;
-		redGO.GetComponent<Renderer> ().material = normal;
-		redGO.GetComponent<FloorProporites> ().indicator.GetComponent<MeshRenderer> ().enabled = false;
-		redGO = null;
-		redUp = false;
+		/*
+		IEnumerator DestroyGreenChain(List<GameObject> chainList){
+			for (int c = 0; c < chainList.Count; c++) {
+				CubeSpawn.turnPause = true;
 
-	}
+				var overlappingCubes = Physics.OverlapSphere (chainList[c].transform.position, 4);
 
-	void ResetBlock(GameObject selectedSquare) {
-		FloorProporites square = selectedSquare.GetComponent<FloorProporites> ();
+				Destroy (chainList[c].gameObject);
+				ScoreSystem.IncreaseBlockScore(ColorEnum.Green);
+				ScoreSystem.multiplier += 1;
 
-		square.color = null;
-		square.cubeColor = null;
-		square.cube = null;
-		selectedSquare.GetComponent<Renderer> ().material = normal;
-		square.indicator.GetComponent<MeshRenderer> ().enabled = false;
-	}
+				for (int b = 0; b < overlappingCubes.Length; b++) {
+					var cubeController = overlappingCubes[b].GetComponent<CubeController>();
+					
+					if (overlappingCubes [b].tag == "Green Cube") {
 
-	void DestroyBlocks(GameObject selectedSquare) {
-		
-		FloorProporites square = selectedSquare.GetComponent<FloorProporites> ();
+						//If the green block is not currently in the list of green blocks to destroy, add it
+						bool noNewGreen = false;
 
-		if (square.cubeColor == "Normal") {
-			//PLACE GUI MESSAGE ON CUBE THAT GETS DESTROYED
-			//Vector3 cubePos = cam.WorldToScreenPoint (selectedSquare.GetComponent<FloorProporites> ().cube.transform.position);
-			//posTest.x = cubePos.x;
-			//posTest.y = cubePos.y;
-			Destroy (selectedSquare.GetComponent<FloorProporites> ().cube);
-			ScoreSystem.grayNum += 1;
+						for (int ba = 0; ba < chainList.Count; ba++) {
+							if (chainList [ba].gameObject != null) {
+								if (overlappingCubes [b].transform.position == chainList [ba].transform.position) {
+									noNewGreen = true;
+								}
+							}
+						}
+
+						if (noNewGreen == false) {
+							chainList.Add (overlappingCubes [b].gameObject);
+						}
+					}
+					if (overlappingCubes [b].tag == "Normal Cube") {
+						Destroy (overlappingCubes [b].gameObject);
+						ScoreSystem.grayNum += 1;
+					}
+
+					if (overlappingCubes [b].tag == "Red Cube") {
+						Destroy (overlappingCubes [b].gameObject);
+						ScoreSystem.grayNum += 1;
+					}
+					if (b == overlappingCubes.Length - 1) {
+						for (int i = 0; i < overlappingCubes.Length; i++) {
+							if (overlappingCubes [i].tag == "Block") {
+								overlappingCubes [i].GetComponent<FloorProperties> ().color = ColorEnum.None;
+								overlappingCubes [i].GetComponent<FloorProperties> ().cubeColor = ColorEnum.None;
+								overlappingCubes [i].GetComponent<FloorProperties> ().cube = null;
+							}
+						}
+
+
+					}
+				}
+				yield return new WaitForSeconds (destructionSpeed);
+
+				if (c == chainList.Count - 1) {
+					CubeSpawn.turnPause = false;
+					chainList.Clear ();
+					ScoreSystem.CalculateScore ();
+				}
+			}
+			
+		}
+		*/
+
+		void RedOnRed(Transform indicator) {
+
+			boxes = Physics.OverlapBox(indicator.position, redDestroySize, Quaternion.identity);
+
 			ScoreSystem.multiplier += 1;
-			ScoreSystem.CalculateScore ();
 
+			foreach(var cube in boxes){
+				if(cube.tag.ToLower() == "block"){
+					ResetFloorProperties(cube.gameObject, false);
+					continue;
+				}
+				
+				var cubeController = cube.GetComponent<CubeController>();
 
+				if(cubeController == null) continue;
 
+				ScoreSystem.IncreaseBlockScore(cubeController.cubeColor);
+				Destroy(cube.gameObject);
+			}
 
+			ResetFloorProperties(_redGameObject, true);
+			_redGameObject = null;
+			_isRedActive = false;
 		}
 
-		if (square.cubeColor == "Black") {
-			square.color = null;
-			selectedSquare.GetComponent<Renderer> ().material = normal;
+		private void ResetFloorProperties(GameObject obj, bool isIndicatorBlock){
+			var floorProperties = obj.GetComponent<FloorProperties>();
+
+			floorProperties.color = ColorEnum.None;
+			floorProperties.cubeColor = ColorEnum.None;
+			floorProperties.cube = null;
+
+			if(!isIndicatorBlock){
+				obj.GetComponent<Renderer> ().material = normalPlacementMaterial;
+				floorProperties.indicator.GetComponent<MeshRenderer>().enabled = false;
+			}
+		}
+		void ResetBlock(GameObject selectedSquare, ColorEnum color) {
+			if(selectedSquare == null) return;
+
+			FloorProperties square = selectedSquare.GetComponent<FloorProperties>();
+
+			if(square == null) return;
+
+			square.color = ColorEnum.None;
+			square.cubeColor = ColorEnum.None;
+			square.cube = null;
+			selectedSquare.GetComponent<Renderer> ().material = normalPlacementMaterial;
 			square.indicator.GetComponent<MeshRenderer> ().enabled = false;
+			selectedSquare = null;
+
+			//switch statement so that more colors can be added
+			switch(color){
+				case ColorEnum.Green:
+					_isGreenActive = false;
+					break;
+				case ColorEnum.Red:
+					_isRedActive = false;
+					break;
+			}
 		}
 
-		if (square.color == "Green") {
-			if (square.cubeColor == "Green") {
-				GreenOnGreen (selectedSquare.transform);
-			}
-			if (square.cubeColor == "Red") {
-				//CODE IN WHAT HAPPENDS
-			}
-		}
+		void DestroyBlocks(GameObject selectedSquare) {
+			FloorProperties square = selectedSquare.GetComponent<FloorProperties> ();
 
-		if (square.color == "Red") {
-			if (square.cubeColor == "Red") {
-				RedOnRed (selectedSquare.transform);
-			}
-			if (square.cubeColor == "Green") {
-				//CODE IN WHAT HAPPENDS
+			switch(square.cubeColor){
+				case ColorEnum.Gray:
+					Destroy (square.cube);
+					ScoreSystem.grayNum += 1;
+					ScoreSystem.multiplier += 1;
+					ScoreSystem.CalculateScore();
+					break;
+				case ColorEnum.Black:
+					square.color = ColorEnum.None;
+					selectedSquare.GetComponent<Renderer> ().material = normalPlacementMaterial;
+					square.indicator.GetComponent<MeshRenderer> ().enabled = false;
+					break;
+				case ColorEnum.Green:
+					GreenOnGreen (selectedSquare.transform);
+					break;
+				case ColorEnum.Red:
+					RedOnRed (selectedSquare.transform);
+					break;
 			}
 		}
 	}
-
-	void OnGUI() {
-		
-		//GUI.Label (posTest, "test");
-	}
-		
 }
